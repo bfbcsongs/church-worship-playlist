@@ -3,22 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Church Worship Playlist</title>
+<title>BFBC Worship Playlist</title>
+
 <style>
-body{font-family:Arial,sans-serif;margin:0;background:#f5f5f5;color:#222}
-header{background:#222;color:white;padding:20px;text-align:center}
-.container{padding:20px;max-width:700px;margin:auto}
-button{width:100%;padding:16px;margin:7px 0;border:0;border-radius:12px;font-size:18px;cursor:pointer}
-.category{background:white}
-.song{background:#eee}
-h2{margin-top:30px}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f5f5;
+  color:#222;
+}
+header{
+  background:#202124;
+  color:white;
+  padding:22px;
+  text-align:center;
+}
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:18px;
+}
+button{
+  width:100%;
+  padding:16px;
+  margin:6px 0;
+  border:0;
+  border-radius:12px;
+  font-size:17px;
+  cursor:pointer;
+}
+.category{
+  background:white;
+}
+.admin{
+  background:#333;
+  color:white;
+}
+#songs{
+  margin-top:20px;
+}
+.song{
+  background:#e8e8e8;
+}
+.hidden{
+  display:none;
+}
+input,textarea,select{
+  width:100%;
+  box-sizing:border-box;
+  padding:13px;
+  margin:6px 0 12px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+}
+.save{
+  background:#167c2a;
+  color:white;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🎶 Church Worship Playlist</h1>
+<h1>🎶 BFBC Worship Playlist</h1>
 <p>Approved Songs Only</p>
 </header>
 
@@ -26,41 +75,140 @@ h2{margin-top:30px}
 
 <h2>Categories</h2>
 
-<button class="category" onclick="showSongs('Joyful')">🎵 Joyful</button>
-<button class="category" onclick="showSongs('Solemn')">🙏 Solemn</button>
-<button class="category" onclick="showSongs('Offering')">💰 Offering</button>
-<button class="category" onclick="showSongs('Closing')">✝️ Closing</button>
+<button class="category" onclick="showCategory('Joyful')">
+🎵 Joyful
+</button>
+
+<button class="category" onclick="showCategory('Solemn')">
+🙏 Solemn
+</button>
+
+<button class="category" onclick="showCategory('Offering')">
+💰 Offering
+</button>
+
+<button class="category" onclick="showCategory('Closing')">
+✝️ Closing
+</button>
+
+<button class="admin" onclick="openAdmin()">
+⚙️ Admin
+</button>
 
 <div id="songs"></div>
+
+<div id="adminPanel" class="hidden">
+
+<h2>➕ Add Approved Song</h2>
+
+<label>Song Title</label>
+<input id="title" placeholder="Song title">
+
+<label>Category</label>
+<select id="category">
+<option>Joyful</option>
+<option>Solemn</option>
+<option>Offering</option>
+<option>Closing</option>
+</select>
+
+<label>Lyrics</label>
+<textarea id="lyrics" rows="8" placeholder="Paste lyrics here"></textarea>
+
+<label>Chords</label>
+<textarea id="chords" rows="5" placeholder="Paste chords here"></textarea>
+
+<button class="save" onclick="saveSong()">
+💾 SAVE SONG
+</button>
+
+</div>
 
 </div>
 
 <script>
 
-const songs = {
-Joyful: [
-"Sample Joyful Song"
-],
-Solemn: [
-"Sample Solemn Song"
-],
-Offering: [
-"Sample Offering Song"
-],
-Closing: [
-"Sample Closing Song"
-]
-};
+let songs =
+JSON.parse(localStorage.getItem("bfbcSongs") || "[]");
 
-function showSongs(category){
+function showCategory(category){
 
-let html = "<h2>"+category+"</h2>";
+let list=songs.filter(song=>song.category===category);
 
-songs[category].forEach(song=>{
-html += "<button class='song'>🎵 "+song+"</button>";
+let html="<h2>"+category+"</h2>";
+
+if(list.length===0){
+html+="<p>No approved songs yet.</p>";
+}
+
+list.forEach((song,index)=>{
+html+=`
+<button class="song" onclick="viewSong(${index})">
+🎵 ${song.title}
+</button>
+`;
 });
 
-document.getElementById("songs").innerHTML = html;
+document.getElementById("songs").innerHTML=html;
+}
+
+function openAdmin(){
+
+document.getElementById("adminPanel")
+.classList.toggle("hidden");
+
+}
+
+function saveSong(){
+
+let title=document.getElementById("title").value.trim();
+let category=document.getElementById("category").value;
+let lyrics=document.getElementById("lyrics").value;
+let chords=document.getElementById("chords").value;
+
+if(!title){
+alert("Please enter song title.");
+return;
+}
+
+songs.push({
+title:title,
+category:category,
+lyrics:lyrics,
+chords:chords
+});
+
+localStorage.setItem(
+"bfbcSongs",
+JSON.stringify(songs)
+);
+
+document.getElementById("title").value="";
+document.getElementById("lyrics").value="";
+document.getElementById("chords").value="";
+
+alert("Song saved!");
+
+}
+
+function viewSong(index){
+
+let song=songs[index];
+
+document.getElementById("songs").innerHTML=`
+<h2>🎵 ${song.title}</h2>
+<p><b>Category:</b> ${song.category}</p>
+
+<h3>📖 Lyrics</h3>
+<pre>${song.lyrics || "No lyrics added."}</pre>
+
+<h3>🎸 Chords</h3>
+<pre>${song.chords || "No chords added."}</pre>
+
+<button onclick="showCategory('${song.category}')">
+⬅️ Back
+</button>
+`;
 
 }
 

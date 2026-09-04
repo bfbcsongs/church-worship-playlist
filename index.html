@@ -1,14 +1,17 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BFBC Worship Playlist</title>
+<title>BFBC Praise and Worship Song</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
@@ -20,8 +23,18 @@ body{
 header{
   background:#111827;
   color:white;
-  padding:20px;
+  padding:22px 15px;
   text-align:center;
+}
+
+header h1{
+  margin:0;
+  font-size:28px;
+}
+
+header p{
+  margin:7px 0 0;
+  opacity:.9;
 }
 
 .container{
@@ -30,14 +43,15 @@ header{
   padding:20px;
 }
 
-h1{margin:0 0 5px}
-h2{margin-top:5px}
+h2{
+  margin-top:5px;
+}
 
 .categories{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  margin:15px 0 25px;
+  gap:12px;
+  margin:18px 0;
 }
 
 .category{
@@ -47,6 +61,11 @@ h2{margin-top:5px}
   padding:18px 10px;
   font-size:17px;
   cursor:pointer;
+  transition:.2s;
+}
+
+.category:hover{
+  transform:translateY(-1px);
 }
 
 .category.active{
@@ -80,41 +99,38 @@ th{
 }
 
 td{
-  padding:10px 8px;
+  padding:11px 8px;
   border-top:1px solid #eee;
   vertical-align:middle;
 }
 
 .song-title{
   font-weight:bold;
+  text-align:left;
+  width:100%;
+  background:transparent;
+}
+
+.song-title:hover{
+  background:#f3f4f6;
 }
 
 .action{
   border:0;
   border-radius:8px;
-  padding:8px 10px;
+  padding:9px 12px;
   cursor:pointer;
   background:#e5e7eb;
 }
 
-.play{
-  background:#16a34a;
-  color:white;
-}
-
-audio{
-  width:180px;
-  max-width:100%;
-}
-
 .empty{
-  padding:20px;
+  padding:25px;
   text-align:center;
   color:#666;
 }
 
 .hidden{
-  display:none;
+  display:none !important;
 }
 
 .back{
@@ -124,7 +140,7 @@ audio{
 
 .card{
   background:white;
-  padding:18px;
+  padding:20px;
   border-radius:12px;
   box-shadow:0 2px 8px #0001;
 }
@@ -140,18 +156,39 @@ input,select,textarea{
 
 textarea{
   min-height:150px;
+  resize:vertical;
 }
 
 .save{
   background:#2563eb;
   color:white;
   width:100%;
+  border:0;
+  border-radius:8px;
+  padding:13px;
+  font-size:16px;
+  cursor:pointer;
 }
 
-pre{
-  white-space:pre-wrap;
-  font-family:Arial,sans-serif;
-  line-height:1.6;
+.cancel{
+  background:#6b7280;
+  color:white;
+  width:100%;
+  border:0;
+  border-radius:8px;
+  padding:13px;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:8px;
+}
+
+.delete{
+  background:#dc2626;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:9px 12px;
+  cursor:pointer;
 }
 
 .status{
@@ -159,7 +196,74 @@ pre{
   font-weight:bold;
 }
 
+pre{
+  white-space:pre-wrap;
+  font-family:Arial,sans-serif;
+  line-height:1.6;
+  background:#f9fafb;
+  padding:15px;
+  border-radius:8px;
+  overflow:auto;
+}
+
+.song-player{
+  margin:20px 0;
+  padding:15px;
+  background:#f3f4f6;
+  border-radius:10px;
+}
+
+.song-player audio{
+  width:100%;
+}
+
+.player-buttons{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.player-buttons button{
+  border:0;
+  border-radius:8px;
+  padding:9px 14px;
+  cursor:pointer;
+  background:#e5e7eb;
+  font-size:15px;
+}
+
+.admin-song{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px;
+  border-top:1px solid #eee;
+}
+
+.admin-song-title{
+  font-weight:bold;
+  flex:1;
+}
+
+.admin-song-category{
+  color:#666;
+  font-size:13px;
+}
+
+.passkey-box{
+  max-width:400px;
+  margin:40px auto;
+}
+
+.passkey-input{
+  text-align:center;
+  font-size:28px;
+  letter-spacing:10px;
+}
+
 @media(max-width:650px){
+
   .categories{
     grid-template-columns:1fr 1fr;
   }
@@ -172,9 +276,18 @@ pre{
     padding:8px 5px;
   }
 
-  audio{
-    width:140px;
+  .song-title{
+    font-size:14px;
   }
+
+  .admin-song{
+    flex-wrap:wrap;
+  }
+
+  .admin-song-title{
+    min-width:100%;
+  }
+
 }
 </style>
 </head>
@@ -182,160 +295,287 @@ pre{
 <body>
 
 <header>
-  <h1>🎶 BFBC Worship Playlist</h1>
+  <h1>🎶 BFBC PRAISE AND WORSHIP SONG</h1>
   <p>Approved Worship Songs</p>
 </header>
 
 <div class="container">
 
-  <!-- MAIN PAGE -->
-  <div id="home">
+<!-- =========================
+     HOME PAGE
+========================= -->
 
-    <h2>Choose Category</h2>
+<div id="home">
 
-    <div class="categories">
+  <h2>Choose Category</h2>
 
-      <button class="category active" onclick="selectCategory('Joyful',this)">
-        🎵 Joyful
-      </button>
+  <div class="categories">
 
-      <button class="category" onclick="selectCategory('Solemn',this)">
-        🙏 Solemn
-      </button>
-
-      <button class="category" onclick="selectCategory('Offering',this)">
-        💰 Offering
-      </button>
-
-      <button class="category" onclick="selectCategory('Closing',this)">
-        ✝️ Closing
-      </button>
-
-    </div>
-
-    <button class="category admin" onclick="showAdmin()">
-      ⚙️ ADMIN
+    <button class="category active"
+      onclick="selectCategory('Joyful',this)">
+      🎵 Joyful Songs
     </button>
 
-    <br><br>
+    <button class="category"
+      onclick="selectCategory('Solemn',this)">
+      🙏 Solemn Songs
+    </button>
 
-    <h2 id="libraryTitle">🎵 Joyful Songs</h2>
+    <button class="category"
+      onclick="selectCategory('Welcoming',this)">
+      🤝 Welcoming Songs
+    </button>
 
-    <div class="library">
+    <button class="category"
+      onclick="selectCategory('Offering',this)">
+      💰 Offering Songs
+    </button>
 
-      <table>
+    <button class="category"
+      onclick="selectCategory('Closing',this)">
+      ✝️ Closing Songs
+    </button>
 
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>Chords</th>
-            <th>Lyrics</th>
-            <th>MP3 ▶️</th>
-          </tr>
-        </thead>
+    <button class="category"
+      onclick="selectCategory('Others',this)">
+      📚 Others
+    </button>
 
-        <tbody id="songTable">
-          <tr>
-            <td colspan="5" class="empty">
-              Loading songs...
-            </td>
-          </tr>
-        </tbody>
+  </div>
 
-      </table>
+  <button class="category admin" onclick="showAdmin()">
+    ⚙️ ADMIN
+  </button>
+
+  <br><br>
+
+  <h2 id="libraryTitle">🎵 Joyful Songs</h2>
+
+  <div class="library">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Song Title</th>
+        </tr>
+      </thead>
+
+      <tbody id="songTable">
+        <tr>
+          <td colspan="2" class="empty">
+            Loading songs...
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     SONG DETAILS
+========================= -->
+
+<div id="songPage" class="hidden">
+
+  <button class="back action" onclick="goHome()">
+    ← Back
+  </button>
+
+  <div class="card">
+
+    <h2 id="songTitle"></h2>
+
+    <p id="songCategory"></p>
+
+    <div id="playerBox" class="song-player hidden">
+
+      <h3>🎵 Music Player</h3>
+
+      <audio id="audioPlayer" controls preload="metadata"></audio>
+
+      <div class="player-buttons">
+
+        <button onclick="backwardAudio()">
+          ⏪ -10 sec
+        </button>
+
+        <button onclick="stopAudio()">
+          ⏹ Stop
+        </button>
+
+        <button onclick="forwardAudio()">
+          +10 sec ⏩
+        </button>
+
+      </div>
 
     </div>
+
+    <h3>Lyrics</h3>
+    <pre id="songLyrics"></pre>
+
+    <h3>Chords</h3>
+    <pre id="songChords"></pre>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     ADMIN LOGIN
+========================= -->
+
+<div id="adminLogin" class="hidden">
+
+  <button class="back action" onclick="goHome()">
+    ← Back
+  </button>
+
+  <div class="card passkey-box">
+
+    <h2>🔐 Admin Access</h2>
+
+    <p>Enter the 4-digit passkey.</p>
+
+    <input
+      id="passkey"
+      class="passkey-input"
+      type="password"
+      inputmode="numeric"
+      maxlength="4"
+      placeholder="••••"
+      oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+
+    <button class="save" onclick="checkPasskey()">
+      🔓 Enter Admin
+    </button>
+
+    <p id="loginStatus" class="status"></p>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     ADMIN PAGE
+========================= -->
+
+<div id="adminPage" class="hidden">
+
+  <button class="back action" onclick="goHome()">
+    ← Back
+  </button>
+
+  <div class="card">
+
+    <h2 id="adminFormTitle">➕ Add Approved Song</h2>
+
+    <label>Song Title</label>
+
+    <input
+      id="title"
+      type="text"
+      placeholder="Song title">
+
+
+    <label>Category</label>
+
+    <select id="category">
+
+      <option value="Joyful">
+        🎵 Joyful Songs
+      </option>
+
+      <option value="Solemn">
+        🙏 Solemn Songs
+      </option>
+
+      <option value="Welcoming">
+        🤝 Welcoming Songs
+      </option>
+
+      <option value="Offering">
+        💰 Offering Songs
+      </option>
+
+      <option value="Closing">
+        ✝️ Closing Songs
+      </option>
+
+      <option value="Others">
+        📚 Others
+      </option>
+
+    </select>
+
+
+    <label>Lyrics</label>
+
+    <textarea
+      id="lyrics"
+      placeholder="Paste lyrics here"></textarea>
+
+
+    <label>Chords</label>
+
+    <textarea
+      id="chords"
+      placeholder="Paste chords here"></textarea>
+
+
+    <label>MP3 Audio (optional)</label>
+
+    <input
+      id="audioFile"
+      type="file"
+      accept="audio/mpeg">
+
+
+    <label>OR Audio Link (optional)</label>
+
+    <input
+      id="audioLink"
+      type="url"
+      placeholder="Paste direct MP3 audio link here">
+
+
+    <button class="save" onclick="saveSong()">
+      💾 Save Song
+    </button>
+
+    <button
+      id="cancelEditButton"
+      class="cancel hidden"
+      onclick="cancelEdit()">
+      Cancel Edit
+    </button>
+
+    <p id="status" class="status"></p>
 
   </div>
 
 
-  <!-- SONG DETAILS -->
-  <div id="songPage" class="hidden">
+  <br>
 
-    <button class="back" onclick="goHome()">
-      ← Back
-    </button>
+  <div class="card">
 
-    <div class="card">
+    <h2>📚 Manage Songs</h2>
 
-      <h2 id="songTitle"></h2>
-
-      <p id="songCategory"></p>
-
-      <audio id="audioPlayer" controls class="hidden"></audio>
-
-      <h3>Lyrics</h3>
-      <pre id="songLyrics"></pre>
-
-      <h3>Chords</h3>
-      <pre id="songChords"></pre>
-
+    <div id="adminSongList">
+      Loading songs...
     </div>
 
   </div>
 
-
-  <!-- ADMIN -->
-  <div id="adminPage" class="hidden">
-
-    <button class="back" onclick="goHome()">
-      ← Back
-    </button>
-
-    <div class="card">
-
-      <h2>➕ Add Approved Song</h2>
-
-      <label>Song Title</label>
-      <input id="title" type="text" placeholder="Song title">
-
-      <label>Category</label>
-
-      <select id="category">
-
-        <option value="Joyful">
-          🎵 Joyful
-        </option>
-
-        <option value="Solemn">
-          🙏 Solemn
-        </option>
-
-        <option value="Offering">
-          💰 Offering
-        </option>
-
-        <option value="Closing">
-          ✝️ Closing
-        </option>
-
-      </select>
-
-      <label>Lyrics</label>
-      <textarea id="lyrics" placeholder="Paste lyrics here"></textarea>
-
-      <label>Chords</label>
-      <textarea id="chords" placeholder="Paste chords here"></textarea>
-
-      <label>MP3 Audio (optional)</label>
-<input id="audioFile" type="file" accept="audio/mpeg">
-
-<label>OR Audio Link (optional)</label>
-<input
-  id="audioLink"
-  type="url"
-  placeholder="Paste direct MP3 audio link here">
-
-      <button class="save" onclick="saveSong()">
-        💾 Save Approved Song
-      </button>
-
-      <p id="status" class="status"></p>
-
-    </div>
-
-  </div>
+</div>
 
 </div>
 
@@ -346,8 +586,11 @@ pre{
    SUPABASE CONNECTION
 ================================ */
 
-const SUPABASE_URL = "https://mafzmcyxqczumcioobng.supabase.co";
-const SUPABASE_KEY = "sb_publishable_hfMDIU_taSvvaXKi8hft4Q_iHyuR4Rp";
+const SUPABASE_URL =
+  "https://mafzmcyxqczumcioobng.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_hfMDIU_taSvvaXKi8hft4Q_iHyuR4Rp";
 
 const supabaseClient =
   supabase.createClient(
@@ -357,23 +600,38 @@ const supabaseClient =
 
 
 /* ================================
+   ADMIN PASSKEY
+================================ */
+
+/*
+   CHANGE THIS TO YOUR OWN 4 DIGITS
+*/
+
+const ADMIN_PASSKEY = "1234";
+
+
+/* ================================
    APP VARIABLES
 ================================ */
 
 let currentCategory = "Joyful";
+
+let editingSongId = null;
+
+let editingSongOldAudio = null;
 
 
 /* ================================
    CATEGORY
 ================================ */
 
-function selectCategory(category, button){
+function selectCategory(category,button){
 
   currentCategory = category;
 
   document
-    .querySelectorAll(".category")
-    .forEach(btn => {
+    .querySelectorAll(".categories .category")
+    .forEach(btn=>{
       btn.classList.remove("active");
     });
 
@@ -385,7 +643,7 @@ function selectCategory(category, button){
 
 /* ================================
    LOAD SONGS
-================================ */
+=============================== */
 
 async function loadSongs(category){
 
@@ -401,29 +659,30 @@ async function loadSongs(category){
     category +
     " Songs";
 
+
   table.innerHTML = `
     <tr>
-      <td colspan="5" class="empty">
+      <td colspan="2" class="empty">
         Loading songs...
       </td>
     </tr>
   `;
 
 
-  const { data, error } =
+  const {data,error} =
     await supabaseClient
       .from("songs")
       .select("*")
-      .eq("category", category)
-      .eq("approved", true)
-      .order("title", { ascending:true });
+      .eq("category",category)
+      .eq("approved",true)
+      .order("title",{ascending:true});
 
 
   if(error){
 
     table.innerHTML = `
       <tr>
-        <td colspan="5" class="empty">
+        <td colspan="2" class="empty">
           Error loading songs:<br>
           ${escapeHtml(error.message)}
         </td>
@@ -434,11 +693,11 @@ async function loadSongs(category){
   }
 
 
-  if(!data || data.length === 0){
+  if(!data || data.length===0){
 
     table.innerHTML = `
       <tr>
-        <td colspan="5" class="empty">
+        <td colspan="2" class="empty">
           No approved songs in this category yet.
         </td>
       </tr>
@@ -457,19 +716,16 @@ async function loadSongs(category){
       document.createElement("tr");
 
 
-    /* NUMBER */
-
     const number =
       document.createElement("td");
 
     number.textContent =
-      index + 1;
+      index+1;
 
-
-    /* TITLE */
 
     const titleCell =
       document.createElement("td");
+
 
     const titleButton =
       document.createElement("button");
@@ -481,81 +737,14 @@ async function loadSongs(category){
       song.title;
 
     titleButton.onclick =
-      () => openSong(song);
+      ()=>openSong(song);
+
 
     titleCell.appendChild(titleButton);
 
 
-    /* CHORDS */
-
-    const chordsCell =
-      document.createElement("td");
-
-    const chordsButton =
-      document.createElement("button");
-
-    chordsButton.className =
-      "action";
-
-    chordsButton.textContent =
-      "🎼 View";
-
-    chordsButton.onclick =
-      () => openSong(song,"chords");
-
-    chordsCell.appendChild(chordsButton);
-
-
-    /* LYRICS */
-
-    const lyricsCell =
-      document.createElement("td");
-
-    const lyricsButton =
-      document.createElement("button");
-
-    lyricsButton.className =
-      "action";
-
-    lyricsButton.textContent =
-      "📖 View";
-
-    lyricsButton.onclick =
-      () => openSong(song,"lyrics");
-
-    lyricsCell.appendChild(lyricsButton);
-
-
-    /* MP3 */
-
-    const audioCell =
-      document.createElement("td");
-
-    if(song.audio){
-
-      const audio =
-        document.createElement("audio");
-
-      audio.controls = true;
-
-      audio.src =
-        song.audio;
-
-      audioCell.appendChild(audio);
-
-    }else{
-
-      audioCell.textContent =
-        "—";
-
-    }
-
-
     row.appendChild(number);
     row.appendChild(titleCell);
-    row.appendChild(chordsCell);
-    row.appendChild(lyricsCell);
-    row.appendChild(audioCell);
 
     table.appendChild(row);
 
@@ -568,80 +757,121 @@ async function loadSongs(category){
    OPEN SONG
 ================================ */
 
-function openSong(song,focus){
+function openSong(song){
 
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("songPage").classList.remove("hidden");
+  document
+    .getElementById("home")
+    .classList.add("hidden");
 
-  document.getElementById("songTitle").textContent = song.title;
+  document
+    .getElementById("songPage")
+    .classList.remove("hidden");
 
-  document.getElementById("songCategory").textContent =
-    "Category: " + song.category;
 
-  const lyrics = document.getElementById("songLyrics");
-  const chords = document.getElementById("songChords");
+  document
+    .getElementById("songTitle")
+    .textContent =
+      song.title;
 
-  const lyricsHeading = lyrics.previousElementSibling;
-  const chordsHeading = chords.previousElementSibling;
 
-  // Show only what was requested
-  if(focus === "lyrics"){
+  document
+    .getElementById("songCategory")
+    .textContent =
+      "Category: " + song.category;
 
-    lyricsHeading.classList.remove("hidden");
-    lyrics.classList.remove("hidden");
 
-    chordsHeading.classList.add("hidden");
-    chords.classList.add("hidden");
-
-    lyrics.textContent =
+  document
+    .getElementById("songLyrics")
+    .textContent =
       song.lyrics || "No lyrics added.";
 
-  }
-  else if(focus === "chords"){
 
-    chordsHeading.classList.remove("hidden");
-    chords.classList.remove("hidden");
-
-    lyricsHeading.classList.add("hidden");
-    lyrics.classList.add("hidden");
-
-    chords.textContent =
+  document
+    .getElementById("songChords")
+    .textContent =
       song.chords || "No chords added.";
 
-  }
-  else{
-
-    lyricsHeading.classList.remove("hidden");
-    lyrics.classList.remove("hidden");
-
-    chordsHeading.classList.remove("hidden");
-    chords.classList.remove("hidden");
-
-    lyrics.textContent =
-      song.lyrics || "No lyrics added.";
-
-    chords.textContent =
-      song.chords || "No chords added.";
-
-  }
 
   const player =
     document.getElementById("audioPlayer");
 
+  const playerBox =
+    document.getElementById("playerBox");
+
+
+  player.pause();
+
   player.removeAttribute("src");
+
+  player.load();
+
 
   if(song.audio){
 
-    player.src = song.audio;
-    player.classList.remove("hidden");
+    player.src =
+      song.audio;
+
+    player.load();
+
+    playerBox.classList.remove("hidden");
 
   }else{
 
-    player.classList.add("hidden");
+    playerBox.classList.add("hidden");
 
   }
 
 }
+
+
+/* ================================
+   AUDIO CONTROLS
+================================ */
+
+function backwardAudio(){
+
+  const player =
+    document.getElementById("audioPlayer");
+
+  player.currentTime =
+    Math.max(
+      0,
+      player.currentTime-10
+    );
+
+}
+
+
+function forwardAudio(){
+
+  const player =
+    document.getElementById("audioPlayer");
+
+  if(isFinite(player.duration)){
+
+    player.currentTime =
+      Math.min(
+        player.duration,
+        player.currentTime+10
+      );
+
+  }
+
+}
+
+
+function stopAudio(){
+
+  const player =
+    document.getElementById("audioPlayer");
+
+  player.pause();
+
+  player.currentTime = 0;
+
+}
+
+
 /* ================================
    HOME
 ================================ */
@@ -657,6 +887,10 @@ function goHome(){
     .classList.add("hidden");
 
   document
+    .getElementById("adminLogin")
+    .classList.add("hidden");
+
+  document
     .getElementById("home")
     .classList.remove("hidden");
 
@@ -666,7 +900,7 @@ function goHome(){
 
 
 /* ================================
-   ADMIN
+   ADMIN LOGIN
 ================================ */
 
 function showAdmin(){
@@ -681,7 +915,259 @@ function showAdmin(){
 
   document
     .getElementById("adminPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("adminLogin")
     .classList.remove("hidden");
+
+
+  document
+    .getElementById("passkey")
+    .value = "";
+
+  document
+    .getElementById("loginStatus")
+    .textContent = "";
+
+}
+
+
+function checkPasskey(){
+
+  const passkey =
+    document
+      .getElementById("passkey")
+      .value;
+
+
+  if(passkey.length!==4){
+
+    document
+      .getElementById("loginStatus")
+      .textContent =
+        "Please enter 4 digits.";
+
+    return;
+  }
+
+
+  if(passkey!==ADMIN_PASSKEY){
+
+    document
+      .getElementById("loginStatus")
+      .textContent =
+        "❌ Incorrect passkey.";
+
+    return;
+  }
+
+
+  document
+    .getElementById("adminLogin")
+    .classList.add("hidden");
+
+  document
+    .getElementById("adminPage")
+    .classList.remove("hidden");
+
+  loadAdminSongs();
+
+}
+
+
+/* ================================
+   ADMIN SONG LIST
+================================ */
+
+async function loadAdminSongs(){
+
+  const list =
+    document.getElementById("adminSongList");
+
+
+  list.innerHTML =
+    "Loading songs...";
+
+
+  const {data,error} =
+    await supabaseClient
+      .from("songs")
+      .select("*")
+      .eq("approved",true)
+      .order("title",{ascending:true});
+
+
+  if(error){
+
+    list.innerHTML =
+      "Error loading songs: " +
+      escapeHtml(error.message);
+
+    return;
+  }
+
+
+  if(!data || data.length===0){
+
+    list.innerHTML =
+      "No songs yet.";
+
+    return;
+  }
+
+
+  list.innerHTML = "";
+
+
+  data.forEach(song=>{
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "admin-song";
+
+
+    const info =
+      document.createElement("div");
+
+    info.className =
+      "admin-song-title";
+
+
+    info.innerHTML =
+      escapeHtml(song.title) +
+      '<div class="admin-song-category">' +
+      escapeHtml(song.category) +
+      '</div>';
+
+
+    const editButton =
+      document.createElement("button");
+
+    editButton.className =
+      "action";
+
+    editButton.textContent =
+      "✏️ Edit";
+
+    editButton.onclick =
+      ()=>editSong(song);
+
+
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.className =
+      "delete";
+
+    deleteButton.textContent =
+      "🗑 Delete";
+
+    deleteButton.onclick =
+      ()=>deleteSong(song);
+
+
+    item.appendChild(info);
+    item.appendChild(editButton);
+    item.appendChild(deleteButton);
+
+    list.appendChild(item);
+
+  });
+
+}
+
+
+/* ================================
+   EDIT SONG
+================================ */
+
+function editSong(song){
+
+  editingSongId =
+    song.id;
+
+  editingSongOldAudio =
+    song.audio || null;
+
+
+  document
+    .getElementById("adminFormTitle")
+    .textContent =
+      "✏️ Edit Song";
+
+
+  document
+    .getElementById("title")
+    .value =
+      song.title || "";
+
+
+  document
+    .getElementById("category")
+    .value =
+      song.category || "Others";
+
+
+  document
+    .getElementById("lyrics")
+    .value =
+      song.lyrics || "";
+
+
+  document
+    .getElementById("chords")
+    .value =
+      song.chords || "";
+
+
+  document
+    .getElementById("audioLink")
+    .value =
+      song.audio || "";
+
+
+  document
+    .getElementById("audioFile")
+    .value =
+      "";
+
+
+  document
+    .getElementById("cancelEditButton")
+    .classList.remove("hidden");
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* ================================
+   CANCEL EDIT
+================================ */
+
+function cancelEdit(){
+
+  editingSongId = null;
+
+  editingSongOldAudio = null;
+
+  clearForm();
+
+  document
+    .getElementById("adminFormTitle")
+    .textContent =
+      "➕ Add Approved Song";
+
+  document
+    .getElementById("cancelEditButton")
+    .classList.add("hidden");
 
 }
 
@@ -698,30 +1184,38 @@ async function saveSong(){
       .value
       .trim();
 
+
   const category =
     document
       .getElementById("category")
       .value;
+
 
   const lyrics =
     document
       .getElementById("lyrics")
       .value;
 
+
   const chords =
     document
       .getElementById("chords")
       .value;
 
+
   const file =
     document
       .getElementById("audioFile")
       .files[0];
-const audioLink =
-  document
-    .getElementById("audioLink")
-    .value
-    .trim();
+
+
+  const audioLink =
+    document
+      .getElementById("audioLink")
+      .value
+      .trim();
+
+
   const status =
     document
       .getElementById("status");
@@ -737,37 +1231,101 @@ const audioLink =
   }
 
 
+  if(file && file.type!=="audio/mpeg"){
+
+    alert(
+      "Please select an MP3 file."
+    );
+
+    return;
+  }
+
+
   status.textContent =
     "Saving...";
 
 
-  let audioUrl = null;
-if(audioLink){
-  audioUrl = audioLink;
-}
+  /* =========================
+     CHECK DUPLICATE
+  ========================= */
 
-  /* UPLOAD MP3 */
+  let duplicateQuery =
+    supabaseClient
+      .from("songs")
+      .select("id,title,category")
+      .eq("category",category)
+      .eq("approved",true)
+      .ilike("title",title);
+
+
+  const {data:duplicates,error:duplicateError} =
+    await duplicateQuery;
+
+
+  if(duplicateError){
+
+    status.textContent =
+      "Could not check duplicate: " +
+      duplicateError.message;
+
+    return;
+  }
+
+
+  const duplicate =
+    duplicates &&
+    duplicates.find(song=>
+      String(song.id)!==
+      String(editingSongId)
+    );
+
+
+  if(duplicate){
+
+    status.textContent =
+      "❌ This song title already exists in this category.";
+
+    return;
+  }
+
+
+  /* =========================
+     AUDIO
+  ========================= */
+
+  let audioUrl =
+    audioLink || null;
+
+
+  /*
+     During editing, if the user
+     leaves both audio fields empty,
+     keep the existing audio.
+  */
+
+  if(
+    editingSongId &&
+    !audioLink &&
+    !file
+  ){
+
+    audioUrl =
+      editingSongOldAudio || null;
+
+  }
+
+
+  /* =========================
+     MP3 UPLOAD
+  ========================= */
 
   if(file){
 
-    if(file.type !== "audio/mpeg"){
-
-      alert(
-        "Please select an MP3 file."
-      );
-
-      status.textContent = "";
-
-      return;
-    }
-
-
     const safeName =
-      file.name
-        .replace(
-          /[^a-zA-Z0-9._-]/g,
-          "_"
-        );
+      file.name.replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+      );
 
 
     const filePath =
@@ -796,7 +1354,10 @@ if(audioLink){
     }
 
 
-    const {data:signedData,error:signedError} =
+    const {
+      data:signedData,
+      error:signedError
+    } =
       await supabaseClient
         .storage
         .from("audio")
@@ -822,57 +1383,200 @@ if(audioLink){
   }
 
 
-  /* SAVE DATABASE RECORD */
+  /* =========================
+     EDIT EXISTING SONG
+  ========================= */
+
+  if(editingSongId){
+
+    const {error} =
+      await supabaseClient
+        .from("songs")
+        .update({
+
+          title:title,
+
+          category:category,
+
+          lyrics:lyrics,
+
+          chords:chords,
+
+          audio:audioUrl,
+
+          approved:true
+
+        })
+        .eq("id",editingSongId);
+
+
+    if(error){
+
+      status.textContent =
+        "Song update failed: " +
+        error.message;
+
+      return;
+    }
+
+
+    status.textContent =
+      "✅ Song updated successfully!";
+
+  }
+
+  /* =========================
+     ADD NEW SONG
+  ========================= */
+
+  else{
+
+    const {error} =
+      await supabaseClient
+        .from("songs")
+        .insert({
+
+          title:title,
+
+          category:category,
+
+          lyrics:lyrics,
+
+          chords:chords,
+
+          audio:audioUrl,
+
+          approved:true
+
+        });
+
+
+    if(error){
+
+      status.textContent =
+        "Song save failed: " +
+        error.message;
+
+      return;
+    }
+
+
+    status.textContent =
+      "✅ Song saved successfully!";
+
+  }
+
+
+  clearForm();
+
+  editingSongId = null;
+
+  editingSongOldAudio = null;
+
+
+  document
+    .getElementById("adminFormTitle")
+    .textContent =
+      "➕ Add Approved Song";
+
+
+  document
+    .getElementById("cancelEditButton")
+    .classList.add("hidden");
+
+
+  loadAdminSongs();
+
+  loadSongs(currentCategory);
+
+}
+
+
+/* ================================
+   DELETE SONG
+================================ */
+
+async function deleteSong(song){
+
+  const confirmed =
+    confirm(
+      'Delete "' +
+      song.title +
+      '" from ' +
+      song.category +
+      '?'
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
 
   const {error} =
     await supabaseClient
       .from("songs")
-      .insert({
-
-        title:title,
-
-        category:category,
-
-        lyrics:lyrics,
-
-        chords:chords,
-
-        audio:audioUrl,
-
-        approved:true
-
-      });
+      .delete()
+      .eq("id",song.id);
 
 
   if(error){
 
-    status.textContent =
-      "Song save failed: " +
-      error.message;
+    alert(
+      "Delete failed: " +
+      error.message
+    );
 
     return;
   }
 
 
-  status.textContent =
-    "✅ Song saved successfully!";
+  alert(
+    "Song deleted successfully."
+  );
 
+
+  loadAdminSongs();
+
+  loadSongs(currentCategory);
+
+}
+
+
+/* ================================
+   CLEAR FORM
+================================ */
+
+function clearForm(){
 
   document
     .getElementById("title")
     .value = "";
 
+
   document
     .getElementById("lyrics")
     .value = "";
+
 
   document
     .getElementById("chords")
     .value = "";
 
+
   document
     .getElementById("audioFile")
     .value = "";
+
+
+  document
+    .getElementById("audioLink")
+    .value = "";
+
+
+  document
+    .getElementById("status")
+    .textContent = "";
 
 }
 
@@ -883,17 +1587,23 @@ if(audioLink){
 
 function getCategoryIcon(category){
 
-  if(category === "Joyful")
+  if(category==="Joyful")
     return "🎵";
 
-  if(category === "Solemn")
+  if(category==="Solemn")
     return "🙏";
 
-  if(category === "Offering")
+  if(category==="Welcoming")
+    return "🤝";
+
+  if(category==="Offering")
     return "💰";
 
-  if(category === "Closing")
+  if(category==="Closing")
     return "✝️";
+
+  if(category==="Others")
+    return "📚";
 
   return "🎶";
 
@@ -901,7 +1611,7 @@ function getCategoryIcon(category){
 
 
 /* ================================
-   SECURITY
+   ESCAPE HTML
 ================================ */
 
 function escapeHtml(text){
@@ -926,3 +1636,4 @@ loadSongs("Joyful");
 
 </body>
 </html>
+```

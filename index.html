@@ -22,6 +22,8 @@ header{
   color:white;
   padding:22px 15px;
   text-align:center;
+  cursor:default;
+  user-select:none;
 }
 
 header h1{
@@ -66,23 +68,6 @@ h2{margin-top:5px}
 .category.active{
   background:#111827;
   color:white;
-}
-
-/* SMALL ADMIN GEAR */
-.admin-gear{
-  position:fixed;
-  right:14px;
-  bottom:14px;
-  width:42px;
-  height:42px;
-  border:0;
-  border-radius:50%;
-  background:#111827;
-  color:white;
-  font-size:20px;
-  cursor:pointer;
-  box-shadow:0 3px 10px #0003;
-  z-index:1000;
 }
 
 .library{
@@ -346,7 +331,7 @@ pre{
 <body>
 
 <header>
-  <h1>🎶 BFBC PRAISE AND WORSHIP SONG</h1>
+  <h1 id="siteTitle">🎶 BFBC PRAISE AND WORSHIP SONG</h1>
   <p>Approved Worship Songs</p>
 </header>
 
@@ -640,16 +625,6 @@ pre{
 </div>
 
 
-<!-- SMALL ADMIN BUTTON -->
-
-<button
-  class="admin-gear"
-  onclick="showAdmin()"
-  title="Admin">
-  ⚙️
-</button>
-
-
 <script>
 
 /* =========================================
@@ -674,6 +649,74 @@ const supabaseClient =
 ========================================= */
 
 const ADMIN_PASSKEY = "1234";
+
+
+/* =========================================
+   SECRET ADMIN ACCESS
+========================================= */
+
+let adminTapCount = 0;
+
+let adminTapTimer = null;
+
+const siteTitle =
+  document.getElementById("siteTitle");
+
+
+/*
+   MOBILE SECRET COMMAND
+
+   Tap the title 5 times quickly.
+*/
+
+siteTitle.addEventListener("click", () => {
+
+  adminTapCount++;
+
+  clearTimeout(adminTapTimer);
+
+  adminTapTimer =
+    setTimeout(() => {
+
+      adminTapCount = 0;
+
+    }, 1200);
+
+
+  if(adminTapCount >= 5){
+
+    adminTapCount = 0;
+
+    clearTimeout(adminTapTimer);
+
+    showAdmin();
+
+  }
+
+});
+
+
+/*
+   DESKTOP SECRET COMMAND
+
+   Ctrl + Shift + A
+*/
+
+document.addEventListener("keydown", (event) => {
+
+  if(
+    event.ctrlKey &&
+    event.shiftKey &&
+    event.key.toLowerCase() === "a"
+  ){
+
+    event.preventDefault();
+
+    showAdmin();
+
+  }
+
+});
 
 
 /* =========================================

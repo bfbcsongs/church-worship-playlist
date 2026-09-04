@@ -564,75 +564,78 @@ async function loadSongs(category){
 
 function openSong(song,focus){
 
-  document
-    .getElementById("home")
-    .classList.add("hidden");
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("songPage").classList.remove("hidden");
 
-  document
-    .getElementById("songPage")
-    .classList.remove("hidden");
+  document.getElementById("songTitle").textContent = song.title;
 
+  document.getElementById("songCategory").textContent =
+    "Category: " + song.category;
 
-  document
-    .getElementById("songTitle")
-    .textContent =
-      song.title;
+  const lyrics = document.getElementById("songLyrics");
+  const chords = document.getElementById("songChords");
 
+  const lyricsHeading = lyrics.previousElementSibling;
+  const chordsHeading = chords.previousElementSibling;
 
-  document
-    .getElementById("songCategory")
-    .textContent =
-      "Category: " +
-      song.category;
+  // Show only what was requested
+  if(focus === "lyrics"){
 
+    lyricsHeading.classList.remove("hidden");
+    lyrics.classList.remove("hidden");
 
-  document
-    .getElementById("songLyrics")
-    .textContent =
+    chordsHeading.classList.add("hidden");
+    chords.classList.add("hidden");
+
+    lyrics.textContent =
       song.lyrics || "No lyrics added.";
 
+  }
+  else if(focus === "chords"){
 
-  document
-    .getElementById("songChords")
-    .textContent =
+    chordsHeading.classList.remove("hidden");
+    chords.classList.remove("hidden");
+
+    lyricsHeading.classList.add("hidden");
+    lyrics.classList.add("hidden");
+
+    chords.textContent =
       song.chords || "No chords added.";
 
+  }
+  else{
+
+    lyricsHeading.classList.remove("hidden");
+    lyrics.classList.remove("hidden");
+
+    chordsHeading.classList.remove("hidden");
+    chords.classList.remove("hidden");
+
+    lyrics.textContent =
+      song.lyrics || "No lyrics added.";
+
+    chords.textContent =
+      song.chords || "No chords added.";
+
+  }
 
   const player =
     document.getElementById("audioPlayer");
 
-
   player.removeAttribute("src");
-
 
   if(song.audio){
 
-    player.src =
-      song.audio;
+    player.src = song.audio;
+    player.classList.remove("hidden");
 
-  }
+  }else{
 
-
-  if(focus === "lyrics"){
-
-    document
-      .getElementById("songLyrics")
-      .scrollIntoView();
-
-  }
-
-
-  if(focus === "chords"){
-
-    document
-      .getElementById("songChords")
-      .scrollIntoView();
+    player.classList.add("hidden");
 
   }
 
 }
-
-
 /* ================================
    HOME
 ================================ */

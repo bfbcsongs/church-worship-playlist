@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BFBC Worship Playlist</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
   font-family:Arial,sans-serif;
@@ -13,53 +16,76 @@ body{
   color:#222;
 }
 header{
-  background:#202124;
+  background:#111827;
   color:white;
-  padding:22px;
+  padding:20px;
   text-align:center;
 }
 .container{
-  max-width:700px;
+  max-width:800px;
   margin:auto;
-  padding:18px;
+  padding:20px;
 }
 button{
-  width:100%;
-  padding:16px;
-  margin:6px 0;
   border:0;
-  border-radius:12px;
-  font-size:17px;
+  border-radius:10px;
+  padding:12px 16px;
   cursor:pointer;
+  font-size:16px;
 }
 .category{
+  width:100%;
+  margin:8px 0;
   background:white;
+  border:1px solid #ddd;
+  text-align:left;
 }
 .admin{
-  background:#333;
+  background:#111827;
   color:white;
-}
-#songs{
-  margin-top:20px;
-}
-.song{
-  background:#e8e8e8;
-}
-.hidden{
-  display:none;
-}
-input,textarea,select{
   width:100%;
-  box-sizing:border-box;
-  padding:13px;
-  margin:6px 0 12px;
+  margin-top:15px;
+}
+.card{
+  background:white;
+  padding:18px;
+  margin:12px 0;
+  border-radius:12px;
+  box-shadow:0 2px 8px #0001;
+}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  margin:6px 0 14px;
   border:1px solid #ccc;
   border-radius:8px;
   font-size:16px;
 }
-.save{
-  background:#167c2a;
+textarea{min-height:150px}
+.hidden{display:none}
+.back{
+  background:#ddd;
+  margin-bottom:15px;
+}
+.play{
+  background:#16a34a;
   color:white;
+  width:100%;
+}
+.save{
+  background:#2563eb;
+  color:white;
+  width:100%;
+}
+audio{
+  width:100%;
+  margin:12px 0;
+}
+h2{margin-top:5px}
+pre{
+  white-space:pre-wrap;
+  font-family:Arial,sans-serif;
+  line-height:1.6;
 }
 </style>
 </head>
@@ -67,44 +93,298 @@ input,textarea,select{
 <body>
 
 <header>
-<h1>🎶 BFBC Worship Playlist</h1>
-<p>Approved Songs Only</p>
+  <h1>🎶 BFBC Worship Playlist</h1>
+  <p>Approved Worship Songs</p>
 </header>
 
 <div class="container">
 
-<h2>Categories</h2>
+  <div id="home">
+    <h2>Choose Category</h2>
 
-<button class="category" onclick="showCategory('Joyful')">
-🎵 Joyful
-</button>
+    <button class="category" onclick="showCategory('Joyful')">
+      🎵 Joyful
+    </button>
 
-<button class="category" onclick="showCategory('Solemn')">
-🙏 Solemn
-</button>
+    <button class="category" onclick="showCategory('Solemn')">
+      🙏 Solemn
+    </button>
 
-<button class="category" onclick="showCategory('Offering')">
-💰 Offering
-</button>
+    <button class="category" onclick="showCategory('Offering')">
+      💰 Offering
+    </button>
 
-<button class="category" onclick="showCategory('Closing')">
-✝️ Closing
-</button>
+    <button class="category" onclick="showCategory('Closing')">
+      ✝️ Closing
+    </button>
 
-<button class="admin" onclick="openAdmin()">
-⚙️ Admin
-</button>
+    <button class="admin" onclick="showAdmin()">
+      ⚙️ Admin
+    </button>
+  </div>
 
-<div id="songs"></div>
+  <div id="categoryPage" class="hidden">
+    <button class="back" onclick="goHome()">← Back</button>
+    <h2 id="categoryTitle"></h2>
+    <div id="songList">Loading...</div>
+  </div>
 
-<div id="adminPanel" class="hidden">
+  <div id="songPage" class="hidden">
+    <button class="back" onclick="goBackCategory()">← Back</button>
+    <div class="card">
+      <h2 id="songTitle"></h2>
+      <p id="songCategory"></p>
 
-<h2>➕ Add Approved Song</h2>
+      <audio id="audioPlayer" controls></audio>
 
-<label>Song Title</label>
-<input id="title" placeholder="Song title">
+      <h3>Lyrics</h3>
+      <pre id="songLyrics"></pre>
 
-<label>Category</label>
+      <h3>Chords</h3>
+      <pre id="songChords"></pre>
+    </div>
+  </div>
+
+  <div id="adminPage" class="hidden">
+    <button class="back" onclick="goHome()">← Back</button>
+
+    <div class="card">
+      <h2>➕ Add Approved Song</h2>
+
+      <label>Song Title</label>
+      <input id="title" type="text" placeholder="Song title">
+
+      <label>Category</label>
+      <select id="category">
+        <option value="Joyful">🎵 Joyful</option>
+        <option value="Solemn">🙏 Solemn</option>
+        <option value="Offering">💰 Offering</option>
+        <option value="Closing">✝️ Closing</option>
+      </select>
+
+      <label>Lyrics</label>
+      <textarea id="lyrics" placeholder="Paste lyrics here"></textarea>
+
+      <label>Chords</label>
+      <textarea id="chords" placeholder="Paste chords here"></textarea>
+
+      <label>MP3 Audio</label>
+      <input id="audioFile" type="file" accept="audio/mpeg">
+
+      <button class="save" onclick="saveSong()">
+        💾 Save Approved Song
+      </button>
+
+      <p id="status"></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+// =====================================================
+// SUPABASE CONNECTION
+// =====================================================
+
+// PAL: PALITAN ANG DALAWANG VALUE NA ITO
+// gamit ang Project URL at Publishable Key mo.
+
+const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
+const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+// =====================================================
+
+let currentCategory = "";
+
+function hideAll(){
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("categoryPage").classList.add("hidden");
+  document.getElementById("songPage").classList.add("hidden");
+  document.getElementById("adminPage").classList.add("hidden");
+}
+
+function goHome(){
+  hideAll();
+  document.getElementById("home").classList.remove("hidden");
+}
+
+async function showCategory(category){
+  currentCategory = category;
+
+  hideAll();
+
+  document.getElementById("categoryPage").classList.remove("hidden");
+  document.getElementById("categoryTitle").textContent = category;
+
+  const list = document.getElementById("songList");
+  list.innerHTML = "Loading songs...";
+
+  const { data, error } = await supabaseClient
+    .from("songs")
+    .select("*")
+    .eq("category", category)
+    .eq("approved", true)
+    .order("title");
+
+  if(error){
+    list.innerHTML = "Error loading songs: " + error.message;
+    return;
+  }
+
+  if(!data || data.length === 0){
+    list.innerHTML = "<p>No approved songs yet.</p>";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.forEach(song => {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const button = document.createElement("button");
+    button.style.width = "100%";
+    button.textContent = "🎵 " + song.title;
+
+    button.onclick = () => openSong(song);
+
+    card.appendChild(button);
+    list.appendChild(card);
+  });
+}
+
+function openSong(song){
+
+  hideAll();
+
+  document.getElementById("songPage").classList.remove("hidden");
+
+  document.getElementById("songTitle").textContent = song.title;
+  document.getElementById("songCategory").textContent =
+    "Category: " + song.category;
+
+  document.getElementById("songLyrics").textContent =
+    song.lyrics || "";
+
+  document.getElementById("songChords").textContent =
+    song.chords || "";
+
+  const player = document.getElementById("audioPlayer");
+
+  player.removeAttribute("src");
+
+  if(song.audio){
+    player.src = song.audio;
+  }
+}
+
+function goBackCategory(){
+  showCategory(currentCategory);
+}
+
+function showAdmin(){
+  hideAll();
+  document.getElementById("adminPage").classList.remove("hidden");
+}
+
+async function saveSong(){
+
+  const title = document.getElementById("title").value.trim();
+  const category = document.getElementById("category").value;
+  const lyrics = document.getElementById("lyrics").value;
+  const chords = document.getElementById("chords").value;
+  const file = document.getElementById("audioFile").files[0];
+  const status = document.getElementById("status");
+
+  if(!title){
+    alert("Please enter the song title.");
+    return;
+  }
+
+  status.textContent = "Saving...";
+
+  let audioUrl = null;
+
+  // Upload MP3
+  if(file){
+
+    if(file.type !== "audio/mpeg"){
+      alert("Please select an MP3 file.");
+      status.textContent = "";
+      return;
+    }
+
+    const safeName = file.name
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const filePath =
+      Date.now() + "_" + safeName;
+
+    const { error: uploadError } =
+      await supabaseClient
+        .storage
+        .from("audio")
+        .upload(filePath, file);
+
+    if(uploadError){
+      status.textContent =
+        "Audio upload failed: " + uploadError.message;
+      return;
+    }
+
+    const { data: signedData, error: signedError } =
+      await supabaseClient
+        .storage
+        .from("audio")
+        .createSignedUrl(filePath, 31536000);
+
+    if(signedError){
+      status.textContent =
+        "Could not create audio URL: " +
+        signedError.message;
+      return;
+    }
+
+    audioUrl = signedData.signedUrl;
+  }
+
+  // Save song information
+  const { error } = await supabaseClient
+    .from("songs")
+    .insert({
+      title: title,
+      category: category,
+      lyrics: lyrics,
+      chords: chords,
+      audio: audioUrl,
+      approved: true
+    });
+
+  if(error){
+    status.textContent =
+      "Song save failed: " + error.message;
+    return;
+  }
+
+  status.textContent = "✅ Song saved successfully!";
+
+  document.getElementById("title").value = "";
+  document.getElementById("lyrics").value = "";
+  document.getElementById("chords").value = "";
+  document.getElementById("audioFile").value = "";
+}
+
+</script>
+
+</body>
+</html><label>Category</label>
 <select id="category">
 <option>Joyful</option>
 <option>Solemn</option>

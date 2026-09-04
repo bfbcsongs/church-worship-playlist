@@ -717,7 +717,11 @@ async function saveSong(){
     document
       .getElementById("audioFile")
       .files[0];
-
+const audioLink =
+  document
+    .getElementById("audioLink")
+    .value
+    .trim();
   const status =
     document
       .getElementById("status");

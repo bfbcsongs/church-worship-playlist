@@ -318,8 +318,14 @@ pre{
       <label>Chords</label>
       <textarea id="chords" placeholder="Paste chords here"></textarea>
 
-      <label>MP3 Audio</label>
-      <input id="audioFile" type="file" accept="audio/mpeg">
+      <label>MP3 Audio (optional)</label>
+<input id="audioFile" type="file" accept="audio/mpeg">
+
+<label>OR Audio Link (optional)</label>
+<input
+  id="audioLink"
+  type="url"
+  placeholder="Paste direct MP3 audio link here">
 
       <button class="save" onclick="saveSong()">
         💾 Save Approved Song
